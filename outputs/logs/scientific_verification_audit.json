@@ -1,0 +1,268 @@
+{
+  "check1_temporal_windows_and_label_integrity": {
+    "1a_gap_history_to_target": {
+      "status": "PASS",
+      "per_split": {
+        "train": {
+          "min": 1,
+          "max": 1,
+          "all_exactly_1": true
+        },
+        "val": {
+          "min": 1,
+          "max": 1,
+          "all_exactly_1": true
+        },
+        "test": {
+          "min": 1,
+          "max": 1,
+          "all_exactly_1": true
+        }
+      },
+      "finding": "Gap between history_end and target_start is exactly 1 calendar day for all 1,137,870 windows across all splits."
+    },
+    "1b_split_boundary_disjointness": {
+      "status": "PASS",
+      "train_target_max": "2025-12-31",
+      "val_target_min": "2026-01-01",
+      "val_target_max": "2026-03-31",
+      "test_target_min": "2026-04-01",
+      "train_to_val_gap_days": 1,
+      "val_to_test_gap_days": 1,
+      "finding": "Split target ranges are strictly disjoint. Train->Val boundary gap = 1 day(s); Val->Test boundary gap = 1 day(s)."
+    },
+    "1c_duplicate_windows": {
+      "status": "PASS",
+      "duplicate_counts": {
+        "train": 0,
+        "val": 0,
+        "test": 0
+      },
+      "finding": "Zero duplicate (serial_number, history_end) windows in any split."
+    },
+    "1d_within_drive_target_overlap": {
+      "status": "PASS",
+      "overlapping_window_pairs": {
+        "train": 0,
+        "val": 0,
+        "test": 0
+      },
+      "finding": "No within-drive overlapping target horizons in any split."
+    },
+    "1e_label_integrity": {
+      "status": "PASS",
+      "per_split": {
+        "train": {
+          "total_positives": 2799,
+          "catalog_verified": 2799,
+          "unverified_in_first_failure_catalog": 0,
+          "false_negatives_in_neg_windows": 0
+        },
+        "val": {
+          "total_positives": 694,
+          "catalog_verified": 693,
+          "unverified_in_first_failure_catalog": 1,
+          "false_negatives_in_neg_windows": 0
+        },
+        "test": {
+          "total_positives": 809,
+          "catalog_verified": 809,
+          "unverified_in_first_failure_catalog": 0,
+          "false_negatives_in_neg_windows": 0
+        }
+      },
+      "validation_unverified_window_investigation": {
+        "serial_number": "2BJD03RD",
+        "history_end": "2026-02-06",
+        "target_start": "2026-02-07",
+        "target_end": "2026-02-08",
+        "catalog_first_failure": "2025-04-09",
+        "root_cause_explanation": "Drive 2BJD03RD suffered an initial mechanical failure on 2025-04-09 (catalog-recorded in train). The drive re-appeared in Backblaze operational telemetry on 2025-10-24 and continued reporting until 2026-02-08, when Backblaze telemetry recorded an authentic SECOND failure event (failure == 1). Because census.py deduplicated failures by serial_number keeping the first occurrence, only 2025-04-09 was retained in failure_catalog.csv. Window target_start=2026-02-07, target_end=2026-02-08 is a genuine re-failure event in raw telemetry, NOT a false positive or preprocessing error.",
+        "verified_against_telemetry": true
+      },
+      "finding": "Train (2,799/2,799) and Test (809/809) positives are 100% catalog-verified. Validation has 693/694 catalog-verified positives. The 1 remaining positive window (Drive 2BJD03RD, target 2026-02-07 to 2026-02-08) was traced to a genuine second failure event in raw daily telemetry following drive re-deployment, omitted from failure_catalog.csv due to first-occurrence deduplication. All 4,302 positive labels across splits are grounded in telemetry failures. Zero false negatives detected in negative windows."
+    },
+    "1f_cross_split_input_history_overlap": {
+      "status": "PASS",
+      "val_windows_with_history_start_in_train_period": {
+        "count": 66899,
+        "percent": 36.45
+      },
+      "test_windows_with_history_start_in_val_period": {
+        "count": 63180,
+        "percent": 35.69
+      },
+      "finding": "66,899 (36.45%) val windows and 63,180 (35.69%) test windows have input history starting in the preceding calendar quarter. This is EXPECTED temporal fleet continuity, NOT future-feature leakage. Input matrix X contains only historical observations prior to target_start. No target information or future observations enter the input sequences."
+    },
+    "1g_disappearing_drives": {
+      "status": "PASS",
+      "total_unique_drives_in_splits": 21280,
+      "confirmed_failed_drives": 6283,
+      "drives_never_recorded_failure": 14997,
+      "drives_absent_from_test_without_failure": 323,
+      "empirical_smart_health_breakdown": {
+        "drives_with_normal_smart_at_retirement": 303,
+        "drives_with_elevated_smart_at_retirement": 20,
+        "percent_normal": 93.81,
+        "percent_elevated": 6.19
+      },
+      "quantification_of_uncertain_windows": {
+        "suspect_train_windows": 744,
+        "suspect_train_windows_pct": 0.0957,
+        "suspect_val_windows": 79,
+        "suspect_val_windows_pct": 0.043,
+        "suspect_test_windows": 0,
+        "suspect_test_windows_pct": 0.0
+      },
+      "finding": "Of the 323 drives that ceased reporting without an official failure flag, 303 (93.81%) showed normal SMART metrics on their final operational day, supporting routine decommission/migration. Exactly 20 drives (6.19%) exhibited elevated error metrics (> 2 std on reallocated/pending/uncorrectable sectors), representing potential proactive pre-emptive replacements. These 20 drives account for 744 training windows (0.0957%) and 79 validation windows (0.0430%). Crucially, ZERO suspect drives appear in the test split; test evaluation metrics are completely unaffected."
+    },
+    "OVERALL": "PASS"
+  },
+  "check2_bootstrap": {
+    "2a_row_alignment": {
+      "status": "PASS",
+      "n_test_windows": 177023,
+      "aligned": true,
+      "finding": "y_test.npy matches test_predictions.parquet['y_true'] exactly for all 177,023 rows."
+    },
+    "2b_vectorized_equivalence": {
+      "status": "PASS",
+      "max_abs_diff": 0.0,
+      "finding": "Vectorized sufficiency-count bootstrap is mathematically identical to row-index resampling (max diff = 0.00e+00)."
+    },
+    "2c_bootstrap_CIs": {
+      "status": "PASS",
+      "resampling_unit": "drive_id (all weekly windows belonging to sampled drive are resampled together)",
+      "threshold_selection": "frozen validation set optimal thresholds",
+      "n_reps": 5000,
+      "seed": 42,
+      "models": {
+        "Transformer": {
+          "status": "PASS",
+          "threshold": 0.4365,
+          "threshold_source": "validation set",
+          "n_reps": 5000,
+          "n_test_windows": 177023,
+          "n_unique_drives": 15769,
+          "cluster_bootstrap_95CI": [
+            0.1706,
+            0.2135
+          ],
+          "cluster_CI_width": 0.0429,
+          "naive_row_bootstrap_95CI": [
+            0.1668,
+            0.2172
+          ],
+          "naive_CI_width": 0.0505,
+          "elapsed_seconds": 17.53,
+          "variance_structure_note": "Cluster bootstrap resamples drive IDs with replacement, preserving within-drive temporal correlation. Here cluster CIs are slightly narrower than naive CIs (width ~0.043 vs ~0.050). This is statistically sound: cluster CIs can be narrower or wider depending on the balance of within-cluster versus between-cluster variance across rare failure events."
+        },
+        "LSTM": {
+          "status": "PASS",
+          "threshold": 0.5669,
+          "threshold_source": "validation set",
+          "n_reps": 5000,
+          "n_test_windows": 177023,
+          "n_unique_drives": 15769,
+          "cluster_bootstrap_95CI": [
+            0.148,
+            0.1916
+          ],
+          "cluster_CI_width": 0.0435,
+          "naive_row_bootstrap_95CI": [
+            0.1452,
+            0.1959
+          ],
+          "naive_CI_width": 0.0507,
+          "elapsed_seconds": 18.19,
+          "variance_structure_note": "Cluster bootstrap resamples drive IDs with replacement, preserving within-drive temporal correlation. Here cluster CIs are slightly narrower than naive CIs (width ~0.043 vs ~0.050). This is statistically sound: cluster CIs can be narrower or wider depending on the balance of within-cluster versus between-cluster variance across rare failure events."
+        },
+        "Isolation_Forest": {
+          "status": "PASS",
+          "threshold": 0.1981,
+          "threshold_source": "validation set",
+          "n_reps": 5000,
+          "n_test_windows": 177023,
+          "n_unique_drives": 15769,
+          "cluster_bootstrap_95CI": [
+            0.1074,
+            0.1486
+          ],
+          "cluster_CI_width": 0.0412,
+          "naive_row_bootstrap_95CI": [
+            0.1047,
+            0.1521
+          ],
+          "naive_CI_width": 0.0474,
+          "elapsed_seconds": 17.66,
+          "variance_structure_note": "Cluster bootstrap resamples drive IDs with replacement, preserving within-drive temporal correlation. Here cluster CIs are slightly narrower than naive CIs (width ~0.043 vs ~0.050). This is statistically sound: cluster CIs can be narrower or wider depending on the balance of within-cluster versus between-cluster variance across rare failure events."
+        }
+      }
+    },
+    "OVERALL": "PASS"
+  },
+  "check3_window_count_reconciliation": {
+    "status": "PASS",
+    "windows_in_train_split": 777298,
+    "windows_in_val_split": 183549,
+    "windows_in_test_split": 177023,
+    "total_in_splits": 1137870,
+    "total_generated_pass2": 1164052,
+    "discarded_windows": 26182,
+    "discarded_percent": 2.25,
+    "independent_metadata_enumeration": {
+      "train_to_val_consecutive_weekly_straddles": 13307,
+      "train_to_val_terminal_drive_straddles": 116,
+      "val_to_test_consecutive_weekly_straddles": 12480,
+      "val_to_test_terminal_drive_straddles": 147,
+      "multi_week_missing_observation_straddles": 132,
+      "total_enumerated_and_classified": 26182
+    },
+    "confirmed_equal": true,
+    "exclusion_classification": {
+      "reason_1_train_val_boundary_isolation": "13,423 windows had 7-day target horizons straddling the 2025-12-31 / 2026-01-01 boundary (history_end in 2025-12-25..2025-12-30). Dropped to prevent training targets from drawing failure observations from 2026 validation.",
+      "reason_2_val_test_boundary_isolation": "12,627 windows had 7-day target horizons straddling the 2026-03-31 / 2026-04-01 boundary (history_end in 2026-03-25..2026-03-30). Dropped to prevent validation targets from drawing failure observations from 2026 Q2 test.",
+      "reason_3_intermittent_reporting_boundary_gaps": "132 windows belonged to drives with intermittent reporting gaps spanning boundaries."
+    },
+    "finding": "Independently enumerated all 26,182 excluded windows from actual split metadata. The sum (26,182) exactly equals the difference between generated (1,164,052) and retained (1,137,870) windows. Classification confirms that 100% of exclusions were performed to enforce strict temporal target isolation across split boundaries (zero cross-split target leakage)."
+  },
+  "check4_inference_latency": {
+    "status": "PASS",
+    "device": "cuda",
+    "n_test_samples": 177023,
+    "full_test_batch_177k": {
+      "Transformer_seconds": 0.826,
+      "LSTM_seconds": 0.288,
+      "Isolation_Forest_seconds": 1.51,
+      "Transformer_us_per_sample": 4.67,
+      "LSTM_us_per_sample": 1.63,
+      "Isolation_Forest_us_per_sample": 8.53
+    },
+    "single_drive_batch1_ms": {
+      "Transformer": 0.708,
+      "LSTM": 0.6,
+      "Isolation_Forest": 18.76,
+      "reps": 500
+    },
+    "fleet_10k_seconds": {
+      "Transformer": 0.244,
+      "LSTM": 0.018,
+      "Isolation_Forest": 0.07
+    },
+    "end_to_end_single_drive_ms": {
+      "Transformer": 1.467,
+      "reps": 100,
+      "pipeline_steps": "log1p transform -> median imputation -> standard scaling -> Transformer forward pass",
+      "excluded": "CSV file I/O, date-range filtering, 30-day windowing",
+      "note": "Represents pure in-memory pipeline latency on local hardware."
+    }
+  },
+  "audit_overall_status": "PASS",
+  "audit_summary": {
+    "CHECK 1 - Temporal Windows & Label Integrity": "PASS",
+    "CHECK 2 - Drive-Cluster Bootstrap (5,000 reps)": "PASS",
+    "CHECK 3 - Window Count Reconciliation": "PASS",
+    "CHECK 4 - Deployment Inference Latency Profiling": "PASS"
+  },
+  "audit_notes": "CHECK 1 (PASS): All 1,137,870 windows strictly disjoint with 1-day gaps. Positive labels: Train (2,799) and Test (809) are 100% catalog-verified. Validation (694 positives): 693 matched catalog; the 1 remaining window (Drive 2BJD03RD, Feb 7-8 2026) was verified in raw daily telemetry as an authentic second failure event following re-deployment. Disappearing drives (323): 303 (93.8%) had clean SMART metrics (routine decommissions); 20 (6.2%) had elevated errors (possible pre-emptive retirements) affecting 744 train (0.096%) and 79 val (0.043%) windows, with 0 affecting test. CHECK 2 (PASS): Array/row/drive alignment verified across all 177,023 test samples. Vectorized sufficiency-count 5,000-rep cluster bootstrap executed with frozen validation thresholds. CHECK 3 (PASS): All 26,182 excluded windows independently enumerated and classified from split metadata. 100% correspond to boundary target straddling to prevent cross-split leakage. CHECK 4 (PASS): Full latency decomposition across batch, real-time alert, and daily fleet scenarios."
+}

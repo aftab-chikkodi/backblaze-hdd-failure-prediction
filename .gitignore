@@ -1,0 +1,76 @@
+# ==============================================================================
+# Git Ignore Configuration: Backblaze HDD Failure Prediction
+# ==============================================================================
+
+# Virtual Environment & Python Runtime
+.venv/
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Credentials, Secrets, and Local Environment Variables
+.env
+.env.*
+*.pem
+*.key
+*.token
+credentials.json
+
+# Operating System & IDE Specific Files
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Raw Data, Compressed Archives, and Temporary Files
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.csv.gz
+data/raw/
+tmp/
+scratch/
+
+# Large Preprocessed Arrays and Checkpoints (Exceeds GitHub Limits / Heavy Data)
+# Note: Raw data and arrays can be regenerated via Pass 1 (census) and Pass 2 (dataset).
+*.npy
+*.npz
+outputs/data/*.npy
+outputs/data/*.parquet
+
+# Model Weights and Serialized Pipelines (Trainable via src/train.py)
+*.pt
+*.pth
+*.joblib
+outputs/models/*.pt
+outputs/models/*.pth
+outputs/models/*.joblib
+outputs/data/*.joblib
+
+# Execution and Runtime Logs (Preserve audit verification JSON below)
+*.log
+outputs/logs/*.log
+
+# Intermediate Catalogs & Cohort Whitelists
+outputs/data/cohort_whitelist.csv
+outputs/data/failure_catalog.csv
+
+# Whitelist: Essential Research Artifacts, Metrics, Plots, & Audit Evidence
+!outputs/logs/scientific_verification_audit.json
+!outputs/logs/pilot_test_results.json
+!outputs/data/fleet_summary.json
+!outputs/data/timing_benchmarks.json
+!outputs/data/split_summary.json
+!outputs/metrics/*.csv
+!outputs/metrics/*.json
+!outputs/plots/*.png

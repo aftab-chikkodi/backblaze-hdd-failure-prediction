@@ -1,0 +1,19 @@
+{
+  "archive_exists": true,
+  "quarter_found": true,
+  "days_processed": 5,
+  "total_rows_read": 1524466,
+  "hdd_rows_retained": 1511174,
+  "ssd_rows_filtered": 13292,
+  "failures_found": 56,
+  "unique_drives": 302568,
+  "missing_features_pct": {
+    "smart_5_raw": 0.188,
+    "smart_194_raw": 0.143,
+    "smart_9_raw": 0.143
+  },
+  "peak_ram_mb": 1274.84,
+  "elapsed_seconds": 17.15,
+  "windowing_verified": true,
+  "status": "PASSED"
+}

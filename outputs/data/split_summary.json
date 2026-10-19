@@ -1,0 +1,29 @@
+{
+  "features": [
+    "smart_5_raw",
+    "smart_187_raw",
+    "smart_188_raw",
+    "smart_194_raw",
+    "smart_197_raw",
+    "smart_198_raw",
+    "smart_9_raw"
+  ],
+  "window": 30,
+  "horizon": 7,
+  "train": {
+    "windows": 777298,
+    "positives": 2799,
+    "prevalence": 0.0036009355485283638
+  },
+  "validation": {
+    "windows": 183549,
+    "positives": 694,
+    "prevalence": 0.0037810067066559884
+  },
+  "test": {
+    "windows": 177023,
+    "positives": 809,
+    "prevalence": 0.004570027623529146
+  },
+  "elapsed_seconds": 3007.64
+}

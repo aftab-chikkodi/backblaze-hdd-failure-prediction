@@ -1,0 +1,12 @@
+{
+  "training_times_seconds": {
+    "LSTM": 286.9,
+    "Transformer": 301.85,
+    "Isolation_Forest": 2.4
+  },
+  "test_inference_latency_seconds": {
+    "LSTM": 2.222,
+    "Transformer": 2.05,
+    "Isolation_Forest": 1.33
+  }
+}

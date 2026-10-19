@@ -1,0 +1,9 @@
+{
+  "total_csvs": 546,
+  "total_raw_rows": 179959674,
+  "total_hdd_rows": 178516466,
+  "unique_failed_drives": 6861,
+  "sampled_healthy_drives": 15000,
+  "cohort_size": 21861,
+  "elapsed_seconds": 1114.51
+}
