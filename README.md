@@ -1,4 +1,5 @@
-# Longitudinal HDD Failure Prediction Using Multi-Quarter Backblaze Telemetry
+# ML-Based Predictive Server Failure Detection Using Sensor Data in
+Datacenter Environments
 
 This repository contains the complete experimental codebase, evaluation artifacts, publication-ready figures, reproducibility checklist, and research report for our comparative study predicting mechanical hard disk drive (HDD) failures from longitudinal SMART telemetry across six calendar quarters (Q1 2025 – Q2 2026).
 
